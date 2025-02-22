@@ -3,7 +3,6 @@ package ma.pub.ticketmanageservice.security;
 import ma.pub.ticketmanageservice.exceptions.NotFoundException;
 import ma.pub.ticketmanageservice.user.UserEntity;
 import ma.pub.ticketmanageservice.user.UserJpaRepository;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 
 @Service
-@Primary
 public class CustomUserDetailsServiceImpl implements UserDetailsService {
     private final UserJpaRepository userJpaRepository;
 

@@ -14,5 +14,7 @@ public interface TicketJpaRepository extends JpaRepository<TicketEntity, UUID> {
 
     List<TicketEntity> findByStatus(Status status);
 
-    List<TicketEntity> findByIdContainingIgnoreCaseOrStatusContainingIgnoreCase(UUID id, Status status);
+    boolean existsByIdIgnoreCase(String id);
+
+    List<TicketEntity> findByIdContainingIgnoreCaseOrStatus(String id, Status status);
 }

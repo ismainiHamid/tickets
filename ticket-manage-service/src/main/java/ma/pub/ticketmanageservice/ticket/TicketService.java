@@ -1,8 +1,8 @@
 package ma.pub.ticketmanageservice.ticket;
 
+import ma.pub.ticketmanageservice.exceptions.AlreadyExistsException;
 import ma.pub.ticketmanageservice.exceptions.NotFoundException;
-import ma.pub.ticketmanageservice.ticket.dto.TicketRequestDto;
-import ma.pub.ticketmanageservice.ticket.dto.TicketResponseDto;
+import ma.pub.ticketmanageservice.ticket.dto.TicketDto;
 import ma.pub.ticketmanageservice.ticket.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
@@ -12,13 +12,13 @@ import java.util.UUID;
 
 @Repository
 public interface TicketService {
-    TicketResponseDto createTicket(TicketRequestDto ticketRequestDto);
+    TicketDto createTicket(TicketDto ticketDto) throws AlreadyExistsException;
 
-    TicketResponseDto updateTicket(UUID id, TicketRequestDto ticketRequestDto) throws NotFoundException;
+    TicketDto updateTicket(UUID id, TicketDto ticketDto) throws AlreadyExistsException, NotFoundException;
 
-    Page<TicketResponseDto> getAllTickets(int page, int size, String[] sort);
+    Page<TicketDto> getAllTickets(int page, int size, String[] sort);
 
-    List<TicketResponseDto> searchAndFilter(UUID id, Status status);
+    List<TicketDto> searchAndFilter(String id, Status status);
 
-    TicketResponseDto changeTicketStatus(UUID id, Status status) throws NotFoundException;
+    TicketDto changeTicketStatus(UUID id, Status status) throws NotFoundException;
 }

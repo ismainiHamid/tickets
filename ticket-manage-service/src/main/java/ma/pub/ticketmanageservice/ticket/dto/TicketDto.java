@@ -5,10 +5,9 @@ import ma.pub.ticketmanageservice.ticket.enums.Priority;
 import ma.pub.ticketmanageservice.ticket.enums.Status;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
-public class TicketResponseDto {
-    private UUID id;
+public class TicketDto {
+    private String id;
     private String title;
     private String description;
     private Priority priority;
@@ -16,10 +15,10 @@ public class TicketResponseDto {
     private Status status;
     private LocalDateTime createdAt;
 
-    public TicketResponseDto() {
+    public TicketDto() {
     }
 
-    public TicketResponseDto(UUID id, String title, String description, Priority priority, Category category, Status status, LocalDateTime createdAt) {
+    public TicketDto(String id, String title, String description, Priority priority, Category category, Status status, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -29,11 +28,11 @@ public class TicketResponseDto {
         this.createdAt = createdAt;
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -86,7 +85,7 @@ public class TicketResponseDto {
     }
 
     public static final class Builder {
-        private UUID id;
+        private String id;
         private String title;
         private String description;
         private Priority priority;
@@ -101,7 +100,7 @@ public class TicketResponseDto {
             return new Builder();
         }
 
-        public Builder withId(UUID id) {
+        public Builder withId(String id) {
             this.id = id;
             return this;
         }
@@ -136,16 +135,16 @@ public class TicketResponseDto {
             return this;
         }
 
-        public TicketResponseDto build() {
-            TicketResponseDto ticketResponseDto = new TicketResponseDto();
-            ticketResponseDto.setId(id);
-            ticketResponseDto.setTitle(title);
-            ticketResponseDto.setDescription(description);
-            ticketResponseDto.setPriority(priority);
-            ticketResponseDto.setCategory(category);
-            ticketResponseDto.setStatus(status);
-            ticketResponseDto.setCreatedAt(createdAt);
-            return ticketResponseDto;
+        public TicketDto build() {
+            TicketDto ticketDto = new TicketDto();
+            ticketDto.setId(id);
+            ticketDto.setTitle(title);
+            ticketDto.setDescription(description);
+            ticketDto.setPriority(priority);
+            ticketDto.setCategory(category);
+            ticketDto.setStatus(status);
+            ticketDto.setCreatedAt(createdAt);
+            return ticketDto;
         }
     }
 }

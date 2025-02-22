@@ -1,10 +1,9 @@
-package ma.pub.ticketmanageservice.auditLog;
+package ma.pub.ticketmanageservice.auditlog;
 
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class AuditLogServiceImpl implements AuditLogService {
@@ -15,8 +14,8 @@ public class AuditLogServiceImpl implements AuditLogService {
     }
 
     @Override
-    public AuditLogEntity createLogAction(AuditLogEntity auditLogEntity) {
-        return this.auditLogJpaRepository.saveAndFlush(auditLogEntity);
+    public void createLogAction(AuditLogEntity auditLogEntity) {
+        this.auditLogJpaRepository.saveAndFlush(auditLogEntity);
     }
 
     @Override
@@ -29,7 +28,7 @@ public class AuditLogServiceImpl implements AuditLogService {
     }
 
     @Override
-    public List<AuditLogEntity> getAllLogsByTicketId(UUID ticketId) {
+    public List<AuditLogEntity> getAllLogsByTicketId(String ticketId) {
         return this.auditLogJpaRepository.findAllByTicket_Id(ticketId);
     }
 }

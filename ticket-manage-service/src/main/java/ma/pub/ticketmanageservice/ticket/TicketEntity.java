@@ -7,18 +7,16 @@ import ma.pub.ticketmanageservice.ticket.enums.Status;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity(name = "tickets")
 public class TicketEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
 
     @Column(nullable = false, unique = true, length = 50)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "CLOB")
     private String description;
 
     @Enumerated(EnumType.STRING)
@@ -39,7 +37,7 @@ public class TicketEntity {
     public TicketEntity() {
     }
 
-    public TicketEntity(UUID id, String title, String description, Priority priority, Category category) {
+    public TicketEntity(String id, String title, String description, Priority priority, Category category) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -49,11 +47,11 @@ public class TicketEntity {
         this.createdAt = LocalDateTime.now();
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -106,7 +104,7 @@ public class TicketEntity {
     }
 
     public static final class Builder {
-        private UUID id;
+        private String id;
         private String title;
         private String description;
         private Priority priority;
@@ -121,7 +119,7 @@ public class TicketEntity {
             return new Builder();
         }
 
-        public Builder withId(UUID id) {
+        public Builder withId(String id) {
             this.id = id;
             return this;
         }

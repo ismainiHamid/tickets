@@ -1,17 +1,16 @@
 package ma.pub.ticketmanageservice.ticket.mapper;
 
 import ma.pub.ticketmanageservice.ticket.TicketEntity;
-import ma.pub.ticketmanageservice.ticket.dto.TicketRequestDto;
-import ma.pub.ticketmanageservice.ticket.dto.TicketResponseDto;
+import ma.pub.ticketmanageservice.ticket.dto.TicketDto;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
 public interface TicketMapper {
-    TicketEntity toTicketEntity(TicketRequestDto ticketRequestDto);
+    TicketEntity toTicketEntity(TicketDto ticketDto);
 
-    TicketResponseDto toTicketResponseDto(TicketEntity ticketEntity);
+    TicketDto toTicketDto(TicketEntity ticketEntity);
 
-    List<TicketResponseDto> toTicketResponseDtoList(List<TicketEntity> ticketEntities);
+    List<TicketDto> toTicketDtoList(List<TicketEntity> ticketEntities);
 }

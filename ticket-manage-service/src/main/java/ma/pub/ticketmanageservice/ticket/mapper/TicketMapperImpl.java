@@ -1,8 +1,7 @@
 package ma.pub.ticketmanageservice.ticket.mapper;
 
 import ma.pub.ticketmanageservice.ticket.TicketEntity;
-import ma.pub.ticketmanageservice.ticket.dto.TicketRequestDto;
-import ma.pub.ticketmanageservice.ticket.dto.TicketResponseDto;
+import ma.pub.ticketmanageservice.ticket.dto.TicketDto;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -11,18 +10,18 @@ import java.util.List;
 public class TicketMapperImpl implements TicketMapper {
 
     @Override
-    public TicketEntity toTicketEntity(TicketRequestDto ticketRequestDto) {
+    public TicketEntity toTicketEntity(TicketDto ticketDto) {
         return TicketEntity.Builder.aTicketEntity()
-                .withTitle(ticketRequestDto.getTitle())
-                .withDescription(ticketRequestDto.getDescription())
-                .withPriority(ticketRequestDto.getPriority())
-                .withCategory(ticketRequestDto.getCategory())
+                .withTitle(ticketDto.getTitle())
+                .withDescription(ticketDto.getDescription())
+                .withPriority(ticketDto.getPriority())
+                .withCategory(ticketDto.getCategory())
                 .build();
     }
 
     @Override
-    public TicketResponseDto toTicketResponseDto(TicketEntity ticketEntity) {
-        return TicketResponseDto.Builder.aTicketResponseDto()
+    public TicketDto toTicketDto(TicketEntity ticketEntity) {
+        return TicketDto.Builder.aTicketResponseDto()
                 .withId(ticketEntity.getId())
                 .withTitle(ticketEntity.getTitle())
                 .withDescription(ticketEntity.getDescription())
@@ -34,7 +33,7 @@ public class TicketMapperImpl implements TicketMapper {
     }
 
     @Override
-    public List<TicketResponseDto> toTicketResponseDtoList(List<TicketEntity> ticketEntities) {
-        return ticketEntities.stream().map(this::toTicketResponseDto).toList();
+    public List<TicketDto> toTicketDtoList(List<TicketEntity> ticketEntities) {
+        return ticketEntities.stream().map(this::toTicketDto).toList();
     }
 }

@@ -1,15 +1,15 @@
-package ma.pub.ticketmanageservice.auditLog;
+package ma.pub.ticketmanageservice.auditlog;
 
 import jakarta.persistence.*;
 import ma.pub.ticketmanageservice.ticket.TicketEntity;
 
-@Entity(name = "auditLogs")
+@Entity(name = "audit_logs")
 public class AuditLogEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "CLOB")
     private String action;
 
     @ManyToOne(cascade = CascadeType.MERGE)

@@ -3,12 +3,12 @@ package ma.pub.ticketmanageservice.ticket;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import ma.pub.ticketmanageservice.exceptions.NotFoundException;
-import ma.pub.ticketmanageservice.ticket.dto.TicketRequestDto;
-import ma.pub.ticketmanageservice.ticket.dto.TicketResponseDto;
+import ma.pub.ticketmanageservice.ticket.dto.TicketDto;
 import ma.pub.ticketmanageservice.ticket.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,20 +27,22 @@ public class TicketController {
 
     @Operation(summary = "Save or update tickets", description = "Save or update tickets")
     @PutMapping
-    public ResponseEntity<TicketResponseDto> createOrUpdateTicket(@RequestParam(required = false) UUID id,
-                                                                  @RequestBody TicketRequestDto ticketRequestDto) throws NotFoundException {
+    @PreAuthorize("hasRole('ROLE_IT_SUPPORT') or hasRole('ROLE_EMPLOYEE')")
+    public ResponseEntity<TicketDto> createOrUpdateTicket(@RequestParam(required = false) UUID id,
+                                                          @RequestBody TicketDto ticketDto) throws NotFoundException {
         return (Objects.isNull(id)) ?
                 ResponseEntity.status(HttpStatus.CREATED)
-                        .body(this.ticketService.createTicket(ticketRequestDto)) :
+                        .body(this.ticketService.createTicket(ticketDto)) :
                 ResponseEntity.status(HttpStatus.OK)
-                        .body(this.ticketService.updateTicket(id, ticketRequestDto));
+                        .body(this.ticketService.updateTicket(id, ticketDto));
     }
 
     @Operation(summary = "Get all tickets", description = "Fetch all tickets")
     @GetMapping
-    public ResponseEntity<Page<TicketResponseDto>> getAllTickets(@RequestParam(defaultValue = "0") int page,
-                                                                 @RequestParam(defaultValue = "10") int size,
-                                                                 @RequestParam(defaultValue = "title,DESC") String[] sort) {
+    @PreAuthorize("hasRole('ROLE_IT_SUPPORT')")
+    public ResponseEntity<Page<TicketDto>> getAllTickets(@RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "10") int size,
+                                                         @RequestParam(defaultValue = "title,DESC") String[] sort) {
         return ResponseEntity.status(HttpStatus.OK).body(
                 this.ticketService.getAllTickets(page, size, sort)
         );
@@ -48,8 +50,9 @@ public class TicketController {
 
     @Operation(summary = "Search & filter", description = "Search & filter tickets")
     @GetMapping(path = "/search")
-    public ResponseEntity<List<TicketResponseDto>> searchAndFilter(@RequestParam UUID id,
-                                                                   @RequestParam Status status) {
+    @PreAuthorize("hasRole('ROLE_IT_SUPPORT') or hasRole('ROLE_EMPLOYEE')")
+    public ResponseEntity<List<TicketDto>> searchAndFilter(@RequestParam String id,
+                                                           @RequestParam Status status) {
         return ResponseEntity.status(HttpStatus.OK).body(
                 this.ticketService.searchAndFilter(id, status)
         );
@@ -57,8 +60,9 @@ public class TicketController {
 
     @Operation(summary = "Change ticket status", description = "Change ticket status By ID")
     @PatchMapping(path = "/{id}")
-    public ResponseEntity<TicketResponseDto> updateTicketStatus(@PathVariable(value = "id") UUID id,
-                                                                @RequestParam Status status) throws NotFoundException {
+    @PreAuthorize("hasRole('ROLE_IT_SUPPORT')")
+    public ResponseEntity<TicketDto> updateTicketStatus(@PathVariable(value = "id") UUID id,
+                                                        @RequestParam Status status) throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(
                 this.ticketService.changeTicketStatus(id, status)
         );

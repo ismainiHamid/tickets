@@ -1,0 +1,35 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+springdoc:
+  swagger-ui:
+    path: /docs
+
+spring:
+  application:
+    name: tickets-manage-service
+  devtools:
+    livereload:
+      port: 35730
+
+  datasource:
+    url: jdbc:oracle:thin:@//localhost:1521/tickets_db
+    username: system
+    password: Hamid26*06*1997!
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        hibernate.dialect: org.hibernate.dialect.Oracle12cDialect
+
+logging:
+  level:
+    org.springframework.jdbc.core: DEBUG
+    com.zaxxer.hikari: DEBUG
+    org.hibernate.orm.connections.pooling: OFF

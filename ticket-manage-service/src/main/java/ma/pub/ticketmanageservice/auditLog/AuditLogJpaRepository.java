@@ -1,4 +1,4 @@
-package ma.pub.ticketmanageservice.auditLog;
+package ma.pub.ticketmanageservice.auditlog;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,5 +11,5 @@ import java.util.UUID;
 public interface AuditLogJpaRepository extends JpaRepository<AuditLogEntity, UUID> {
     List<AuditLogEntity> findAllBy(Pageable pageable);
 
-    List<AuditLogEntity> findAllByTicket_Id(UUID ticketId);
+    List<AuditLogEntity> findAllByTicket_Id(String ticketId);
 }

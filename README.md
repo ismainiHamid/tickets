@@ -25,6 +25,7 @@ docker-compose up
 
 
 ## Open ai docs:
+Find the OpenAI docs in the path:
 ```bash
 ./open-ai-docs.yaml
 ```

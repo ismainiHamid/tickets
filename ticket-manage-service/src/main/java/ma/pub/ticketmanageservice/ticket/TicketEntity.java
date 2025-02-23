@@ -4,16 +4,22 @@ import jakarta.persistence.*;
 import ma.pub.ticketmanageservice.ticket.enums.Category;
 import ma.pub.ticketmanageservice.ticket.enums.Priority;
 import ma.pub.ticketmanageservice.ticket.enums.Status;
+import ma.pub.ticketmanageservice.user.UserEntity;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity(name = "tickets")
 public class TicketEntity {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(nullable = false, unique = true)
+    private String ticketId;
+
+    @Column(nullable = false, length = 50)
     private String title;
 
     @Column(nullable = false, columnDefinition = "CLOB")
@@ -31,28 +37,41 @@ public class TicketEntity {
     @Column(nullable = false)
     private Status status;
 
+    @ManyToOne(cascade = CascadeType.MERGE)
+    private UserEntity user;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
     public TicketEntity() {
     }
 
-    public TicketEntity(String id, String title, String description, Priority priority, Category category) {
+    public TicketEntity(UUID id, String ticketId, String title, String description, Priority priority, Category category, Status status, UserEntity user, LocalDateTime createdAt) {
         this.id = id;
+        this.ticketId = ticketId;
         this.title = title;
         this.description = description;
         this.priority = priority;
         this.category = category;
-        this.status = Status.NEW;
-        this.createdAt = LocalDateTime.now();
+        this.status = status;
+        this.user = user;
+        this.createdAt = createdAt;
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
+    }
+
+    public String getTicketId() {
+        return ticketId;
+    }
+
+    public void setTicketId(String ticketId) {
+        this.ticketId = ticketId;
     }
 
     public String getTitle() {
@@ -95,6 +114,14 @@ public class TicketEntity {
         this.status = status;
     }
 
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -104,12 +131,14 @@ public class TicketEntity {
     }
 
     public static final class Builder {
-        private String id;
+        private UUID id;
+        private String ticketId;
         private String title;
         private String description;
         private Priority priority;
         private Category category;
         private Status status;
+        private UserEntity user;
         private LocalDateTime createdAt;
 
         private Builder() {
@@ -119,8 +148,13 @@ public class TicketEntity {
             return new Builder();
         }
 
-        public Builder withId(String id) {
+        public Builder withId(UUID id) {
             this.id = id;
+            return this;
+        }
+
+        public Builder withTicketId(String ticketId) {
+            this.ticketId = ticketId;
             return this;
         }
 
@@ -149,15 +183,27 @@ public class TicketEntity {
             return this;
         }
 
+        public Builder withUser(UserEntity user) {
+            this.user = user;
+            return this;
+        }
+
         public Builder withCreatedAt(LocalDateTime createdAt) {
             this.createdAt = createdAt;
             return this;
         }
 
         public TicketEntity build() {
-            TicketEntity ticketEntity = new TicketEntity(id, title, description, priority, category);
-            ticketEntity.createdAt = this.createdAt;
-            ticketEntity.status = this.status;
+            TicketEntity ticketEntity = new TicketEntity();
+            ticketEntity.setId(id);
+            ticketEntity.setTicketId(ticketId);
+            ticketEntity.setTitle(title);
+            ticketEntity.setDescription(description);
+            ticketEntity.setPriority(priority);
+            ticketEntity.setCategory(category);
+            ticketEntity.setStatus(status);
+            ticketEntity.setUser(user);
+            ticketEntity.setCreatedAt(createdAt);
             return ticketEntity;
         }
     }

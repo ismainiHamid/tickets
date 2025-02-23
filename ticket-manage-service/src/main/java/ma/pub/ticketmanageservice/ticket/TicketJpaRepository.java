@@ -12,9 +12,11 @@ import java.util.UUID;
 public interface TicketJpaRepository extends JpaRepository<TicketEntity, UUID> {
     List<TicketEntity> findAllBy(Pageable pageable);
 
-    List<TicketEntity> findByStatus(Status status);
+    List<TicketEntity> findAllByUser_Username(String username, Pageable pageable);
 
-    boolean existsByIdIgnoreCase(String id);
+    List<TicketEntity> findByTicketIdContainingIgnoreCaseOrStatus(String id, Status status);
 
-    List<TicketEntity> findByIdContainingIgnoreCaseOrStatus(String id, Status status);
+    long countAllByUser_Username(String username);
+
+    boolean existsByTicketIdIgnoreCase(String ticketId);
 }

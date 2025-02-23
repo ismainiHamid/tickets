@@ -12,6 +12,7 @@ public class TicketMapperImpl implements TicketMapper {
     @Override
     public TicketEntity toTicketEntity(TicketDto ticketDto) {
         return TicketEntity.Builder.aTicketEntity()
+                .withId(ticketDto.getId())
                 .withTitle(ticketDto.getTitle())
                 .withDescription(ticketDto.getDescription())
                 .withPriority(ticketDto.getPriority())
@@ -21,8 +22,9 @@ public class TicketMapperImpl implements TicketMapper {
 
     @Override
     public TicketDto toTicketDto(TicketEntity ticketEntity) {
-        return TicketDto.Builder.aTicketResponseDto()
+        return TicketDto.Builder.aTicketDto()
                 .withId(ticketEntity.getId())
+                .withTicketId(ticketEntity.getTicketId())
                 .withTitle(ticketEntity.getTitle())
                 .withDescription(ticketEntity.getDescription())
                 .withPriority(ticketEntity.getPriority())

@@ -1,8 +1,9 @@
 package ma.pub.ticketmanageservice.ticket;
 
 import ma.pub.ticketmanageservice.auditlog.AuditLogEntity;
-import ma.pub.ticketmanageservice.auditlog.AuditLogService;
+import ma.pub.ticketmanageservice.auditlog.AuditLogJpaRepository;
 import ma.pub.ticketmanageservice.exceptions.AlreadyExistsException;
+import ma.pub.ticketmanageservice.exceptions.BadRequestException;
 import ma.pub.ticketmanageservice.exceptions.NotFoundException;
 import ma.pub.ticketmanageservice.ticket.dto.TicketDto;
 import ma.pub.ticketmanageservice.ticket.enums.Status;
@@ -22,26 +23,33 @@ import java.util.UUID;
 public class TicketServiceImpl implements TicketService {
     private final TicketJpaRepository ticketJpaRepository;
     private final TicketMapper ticketMapper;
-    private final AuditLogService auditLogService;
+    private final AuditLogJpaRepository auditLogJpaRepository;
 
-    public TicketServiceImpl(TicketJpaRepository ticketJpaRepository, AuditLogService auditLogService, TicketMapper ticketMapper) {
+    public TicketServiceImpl(TicketJpaRepository ticketJpaRepository, AuditLogJpaRepository auditLogJpaRepository, TicketMapper ticketMapper) {
         this.ticketJpaRepository = ticketJpaRepository;
-        this.auditLogService = auditLogService;
+        this.auditLogJpaRepository = auditLogJpaRepository;
         this.ticketMapper = ticketMapper;
     }
 
     @Override
-    public TicketDto createTicket(TicketDto ticketDto) throws AlreadyExistsException {
+    @Transactional
+    public TicketDto createTicket(TicketDto ticketDto) throws AlreadyExistsException, BadRequestException {
         TicketEntity toTicketEntity = this.ticketMapper.toTicketEntity(ticketDto);
 
-        if (this.ticketJpaRepository.existsByIdIgnoreCase(toTicketEntity.getId()))
-            throw new AlreadyExistsException("The tickets with id: " + toTicketEntity.getId() + ", already exists.");
+        if (this.ticketJpaRepository.existsByTicketIdIgnoreCase(toTicketEntity.getTicketId()))
+            throw new AlreadyExistsException("The tickets with id: " + toTicketEntity.getTicketId() + ", already exists.");
 
+        UserEntity connectedUser = this.getConnectedUser().orElseThrow(() ->
+                new BadRequestException("Error the user connection.")
+        );
+
+        toTicketEntity.setUser(connectedUser);
         TicketEntity ticketEntity = this.ticketJpaRepository.saveAndFlush(toTicketEntity);
 
-        this.auditLogService.createLogAction(AuditLogEntity.Builder.anAuditLogEntity()
+        this.auditLogJpaRepository.saveAndFlush(AuditLogEntity.Builder.anAuditLogEntity()
                 .withAction("Create a new ticket with title: " + ticketEntity.getTitle())
                 .withTicket(ticketEntity)
+                .withUser(connectedUser)
                 .build()
         );
 
@@ -50,21 +58,33 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional
-    public TicketDto updateTicket(UUID id, TicketDto ticketDto) throws AlreadyExistsException, NotFoundException {
+    public TicketDto updateTicket(UUID id, TicketDto ticketDto) throws AlreadyExistsException, BadRequestException, NotFoundException {
         TicketEntity toTicketEntity = this.ticketMapper.toTicketEntity(ticketDto);
 
         TicketEntity ticketEntity = this.ticketJpaRepository.findById(id).orElseThrow(() ->
                 new NotFoundException("Can't update the ticket with id: " + id + ", dose not exists.")
         );
 
-        if (!ticketEntity.getTitle().equals(toTicketEntity.getTitle()))
-            if (this.ticketJpaRepository.existsByIdIgnoreCase(toTicketEntity.getId()))
-                throw new AlreadyExistsException("The tickets with id: " + toTicketEntity.getId() + ", already exists.");
+        if (!ticketEntity.getTicketId().equals(toTicketEntity.getTicketId()))
+            if (this.ticketJpaRepository.existsByTicketIdIgnoreCase(toTicketEntity.getTicketId()))
+                throw new AlreadyExistsException("The tickets with id: " + toTicketEntity.getTicketId() + ", already exists.");
+
+        UserEntity connectedUser = this.getConnectedUser().orElseThrow(() ->
+                new BadRequestException("Error the user connection.")
+        );
 
         ticketEntity.setTitle(toTicketEntity.getTitle());
         ticketEntity.setDescription(toTicketEntity.getDescription());
         ticketEntity.setPriority(toTicketEntity.getPriority());
         ticketEntity.setCategory(toTicketEntity.getCategory());
+        ticketEntity.setUser(connectedUser);
+
+        this.auditLogJpaRepository.saveAndFlush(AuditLogEntity.Builder.anAuditLogEntity()
+                .withAction("Updated ticket with title: " + ticketEntity.getTitle())
+                .withTicket(ticketEntity)
+                .withUser(connectedUser)
+                .build()
+        );
 
         return this.ticketMapper.toTicketDto(ticketEntity);
     }
@@ -72,17 +92,35 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public Page<TicketDto> getAllTickets(int page, int size, String[] sort) {
         Sort sortPage = Sort.by(Sort.Direction.fromString(sort[1]), sort[0]);
+
         Pageable pageable = (size == -1) ? Pageable.unpaged(sortPage) :
                 PageRequest.of(page, size, sortPage);
+
         return new PageImpl<>(this.ticketMapper.toTicketDtoList(
                 this.ticketJpaRepository.findAllBy(pageable)
         ), pageable, this.ticketJpaRepository.count());
     }
 
     @Override
-    public List<TicketDto> searchAndFilter(String id, Status status) {
+    public Page<TicketDto> getAllTicketsByUser_username(int page, int size, String[] sort) {
+        Sort sortPage = Sort.by(Sort.Direction.fromString(sort[1]), sort[0]);
+
+        Pageable pageable = (size == -1) ? Pageable.unpaged(sortPage) :
+                PageRequest.of(page, size, sortPage);
+
+        UserEntity connectedUser = this.getConnectedUser().orElseThrow(() ->
+                new BadRequestException("Error the user auth.")
+        );
+
+        return new PageImpl<>(this.ticketMapper.toTicketDtoList(
+                this.ticketJpaRepository.findAllByUser_Username(connectedUser.getUsername(), pageable)
+        ), pageable, this.ticketJpaRepository.countAllByUser_Username(connectedUser.getUsername()));
+    }
+
+    @Override
+    public List<TicketDto> searchAndFilter(String ticketId, Status status) {
         return this.ticketMapper.toTicketDtoList(
-                this.ticketJpaRepository.findByIdContainingIgnoreCaseOrStatus(id, status)
+                this.ticketJpaRepository.findByTicketIdContainingIgnoreCaseOrStatus(ticketId, status)
         );
     }
 
@@ -92,6 +130,16 @@ public class TicketServiceImpl implements TicketService {
         TicketEntity ticketEntity = this.ticketJpaRepository.findById(id).orElseThrow(() ->
                 new NotFoundException("Ticket with id: " + id + " not found")
         );
+
+        this.auditLogJpaRepository.saveAndFlush(AuditLogEntity.Builder.anAuditLogEntity()
+                .withAction("Change ticket with status to: " + status)
+                .withTicket(ticketEntity)
+                .withUser(this.getConnectedUser().orElseThrow(() ->
+                        new BadRequestException("Error the user connection.")
+                ))
+                .build()
+        );
+
         ticketEntity.setStatus(status);
         return this.ticketMapper.toTicketDto(ticketEntity);
     }

@@ -11,17 +11,17 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 
 @Service
-public class CustomUserDetailsServiceImpl implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserJpaRepository userJpaRepository;
 
-    public CustomUserDetailsServiceImpl(UserJpaRepository userJpaRepository) {
+    public UserDetailsServiceImpl(UserJpaRepository userJpaRepository) {
         this.userJpaRepository = userJpaRepository;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws NotFoundException {
         UserEntity user = this.userJpaRepository.findByUsername(username).orElseThrow(() ->
-                new NotFoundException("The username or password is incorrect.")
+                new NotFoundException("The user with username :" + username + ", not exists.")
         );
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),

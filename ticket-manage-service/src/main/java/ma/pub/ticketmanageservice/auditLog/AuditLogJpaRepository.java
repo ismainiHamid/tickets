@@ -10,6 +10,4 @@ import java.util.UUID;
 @Repository
 public interface AuditLogJpaRepository extends JpaRepository<AuditLogEntity, UUID> {
     List<AuditLogEntity> findAllBy(Pageable pageable);
-
-    List<AuditLogEntity> findAllByTicket_Id(String ticketId);
 }

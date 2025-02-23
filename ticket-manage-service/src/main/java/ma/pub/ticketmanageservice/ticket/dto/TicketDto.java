@@ -5,9 +5,11 @@ import ma.pub.ticketmanageservice.ticket.enums.Priority;
 import ma.pub.ticketmanageservice.ticket.enums.Status;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class TicketDto {
-    private String id;
+    private UUID id;
+    private String ticketId;
     private String title;
     private String description;
     private Priority priority;
@@ -18,8 +20,9 @@ public class TicketDto {
     public TicketDto() {
     }
 
-    public TicketDto(String id, String title, String description, Priority priority, Category category, Status status, LocalDateTime createdAt) {
+    public TicketDto(UUID id, String ticketId, String title, String description, Priority priority, Category category, Status status, LocalDateTime createdAt) {
         this.id = id;
+        this.ticketId = ticketId;
         this.title = title;
         this.description = description;
         this.priority = priority;
@@ -28,12 +31,20 @@ public class TicketDto {
         this.createdAt = createdAt;
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
+    }
+
+    public String getTicketId() {
+        return ticketId;
+    }
+
+    public void setTicketId(String ticketId) {
+        this.ticketId = ticketId;
     }
 
     public String getTitle() {
@@ -85,7 +96,8 @@ public class TicketDto {
     }
 
     public static final class Builder {
-        private String id;
+        private UUID id;
+        private String ticketId;
         private String title;
         private String description;
         private Priority priority;
@@ -96,12 +108,17 @@ public class TicketDto {
         private Builder() {
         }
 
-        public static Builder aTicketResponseDto() {
+        public static Builder aTicketDto() {
             return new Builder();
         }
 
-        public Builder withId(String id) {
+        public Builder withId(UUID id) {
             this.id = id;
+            return this;
+        }
+
+        public Builder withTicketId(String ticketId) {
+            this.ticketId = ticketId;
             return this;
         }
 
@@ -138,6 +155,7 @@ public class TicketDto {
         public TicketDto build() {
             TicketDto ticketDto = new TicketDto();
             ticketDto.setId(id);
+            ticketDto.setTicketId(ticketId);
             ticketDto.setTitle(title);
             ticketDto.setDescription(description);
             ticketDto.setPriority(priority);

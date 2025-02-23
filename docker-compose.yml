@@ -15,8 +15,8 @@ services:
 
   backend:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ./ticket-manage-service
+      dockerfile: ./ticket-manage-service/Dockerfile
     container_name: ticket-backend
     ports:
       - "8080:8080"
@@ -26,6 +26,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=26*06*1997!
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.Oracle12cDialect
+      - DB_HOST=oracle-db
     depends_on:
       - oracle-db
     networks:

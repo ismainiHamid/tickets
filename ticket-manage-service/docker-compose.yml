@@ -5,26 +5,25 @@ services:
     image: container-registry.oracle.com/database/enterprise:19.3.0.0
     container_name: oracle-db
     ports:
-      - "1521:1521" # Expose Oracle DB port
-      - "5500:5500" # Expose Oracle Enterprise Manager (OEM) port
+      - "1521:1521"
+      - "5500:5500"
     environment:
-      - ORACLE_PWD=YourPassword
-      - ORACLE_SID=ORCL
+      - ORACLE_PWD=26*06*1997!
+      - ORACLE_SID=tickets_db
     networks:
       - backend-network
 
-  # Backend Spring Boot Application Service
   backend:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: ticket-backend
     ports:
-      - "8080:8080" # Expose Spring Boot app on port 8080
+      - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@oracle-db:1521/ORCL
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@oracle-db:1521/tickets_db
       - SPRING_DATASOURCE_USERNAME=system
-      - SPRING_DATASOURCE_PASSWORD=1997
+      - SPRING_DATASOURCE_PASSWORD=26*06*1997!
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.Oracle12cDialect
     depends_on:

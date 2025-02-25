@@ -23,6 +23,10 @@ docker-compose build
 docker-compose up
 ```
 
+## Video link
+```bash
+https://drive.google.com/file/d/1w4S0n18t-n3a_PIN9ACcFwl33kM0VTU6/view?usp=sharing
+```
 
 ## Open ai docs:
 Find the OpenAI docs in the path:

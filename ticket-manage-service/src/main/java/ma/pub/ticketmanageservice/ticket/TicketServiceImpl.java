@@ -9,9 +9,11 @@ import ma.pub.ticketmanageservice.ticket.dto.TicketDto;
 import ma.pub.ticketmanageservice.ticket.enums.Status;
 import ma.pub.ticketmanageservice.ticket.mapper.TicketMapper;
 import ma.pub.ticketmanageservice.user.UserEntity;
+import ma.pub.ticketmanageservice.user.UserJpaRepository;
 import org.springframework.data.domain.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,11 +26,13 @@ public class TicketServiceImpl implements TicketService {
     private final TicketJpaRepository ticketJpaRepository;
     private final TicketMapper ticketMapper;
     private final AuditLogJpaRepository auditLogJpaRepository;
+    private final UserJpaRepository userJpaRepository;
 
-    public TicketServiceImpl(TicketJpaRepository ticketJpaRepository, AuditLogJpaRepository auditLogJpaRepository, TicketMapper ticketMapper) {
+    public TicketServiceImpl(TicketJpaRepository ticketJpaRepository, AuditLogJpaRepository auditLogJpaRepository, TicketMapper ticketMapper, UserJpaRepository userJpaRepository) {
         this.ticketJpaRepository = ticketJpaRepository;
         this.auditLogJpaRepository = auditLogJpaRepository;
         this.ticketMapper = ticketMapper;
+        this.userJpaRepository = userJpaRepository;
     }
 
     @Override
@@ -144,12 +148,13 @@ public class TicketServiceImpl implements TicketService {
         return this.ticketMapper.toTicketDto(ticketEntity);
     }
 
-    private Optional<UserEntity> getConnectedUser() {
+    private Optional<UserEntity> getConnectedUser() throws NotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
             Object principal = authentication.getPrincipal();
-            if (principal instanceof UserEntity)
-                return Optional.of((UserEntity) principal);
+            return Optional.of(this.userJpaRepository.findByUsername(
+                    ((UserDetails) principal).getUsername()
+            ).orElseThrow(() -> new NotFoundException("User not found.")));
         }
         return Optional.empty();
     }

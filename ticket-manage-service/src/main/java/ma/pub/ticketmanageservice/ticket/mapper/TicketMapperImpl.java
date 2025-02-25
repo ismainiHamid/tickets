@@ -2,6 +2,7 @@ package ma.pub.ticketmanageservice.ticket.mapper;
 
 import ma.pub.ticketmanageservice.ticket.TicketEntity;
 import ma.pub.ticketmanageservice.ticket.dto.TicketDto;
+import ma.pub.ticketmanageservice.ticket.enums.Status;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,11 +13,12 @@ public class TicketMapperImpl implements TicketMapper {
     @Override
     public TicketEntity toTicketEntity(TicketDto ticketDto) {
         return TicketEntity.Builder.aTicketEntity()
-                .withId(ticketDto.getId())
+                .withTicketId(ticketDto.getTicketId())
                 .withTitle(ticketDto.getTitle())
                 .withDescription(ticketDto.getDescription())
                 .withPriority(ticketDto.getPriority())
                 .withCategory(ticketDto.getCategory())
+                .withStatus(Status.NEW)
                 .build();
     }
 
